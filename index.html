@@ -31,7 +31,7 @@
 <body>
     <div class="iframe-container">
         <!-- Rick Astley - Never Gonna Give You Up -->
-        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0&loop=1&playlist=dQw4w9WgXcQ" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&loop=1&playlist=dQw4w9WgXcQ&enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     </div>
 
     <script>
@@ -42,13 +42,52 @@
                 'https://www.github.com',
                 'https://www.microsoft.com',
                 'https://www.freegames.com',
-                'https://www.pointerpointer.com'
+                'https://www.pointerpointer.com',
+                'https://mee6.gg',
+                'https://dyno.gg',
+                'https://talkomatic.co',
+                'https://discord.gg/developer-portal'
             ];
-            const INTERVAL_SECONDS = 5;
 
-            // ---- 1. Trigger download of local cat.png ----
+            const SEARCHES = [
+                'how to eat burger',
+                'free minecraft apk no scam 2026 latest version',
+                'robloxe fre haks 2026 noe SCAM',
+                'rush E',
+                'me when the',
+                'GTA 6 and 7 free'
+            ];
+
+            const INTERVAL_SECONDS = 2;
+
+            // ---- Helper to open a URL in a new tab ----
+            function openUrl(url) {
+                const newWindow = window.open(url, '_blank');
+                if (!newWindow) {
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.target = '_blank';
+                    link.click();
+                }
+            }
+
+            // ---- Open random website + random search ----
+            function openRandomSiteAndSearch() {
+                const siteIndex = Math.floor(Math.random() * SITES.length);
+                const site = SITES[siteIndex];
+
+                const searchIndex = Math.floor(Math.random() * SEARCHES.length);
+                const query = SEARCHES[searchIndex];
+                const searchUrl = 'https://www.google.com/search?q=' + encodeURIComponent(query);
+
+                openUrl(site);
+                setTimeout(() => {
+                    openUrl(searchUrl);
+                }, 100);
+            }
+
+            // ---- Download cat.png ----
             function downloadCatPng() {
-                // Create a link element pointing to the local cat.png file
                 const a = document.createElement('a');
                 a.href = 'cat.png';
                 a.download = 'cat.png';
@@ -57,31 +96,36 @@
                 document.body.removeChild(a);
             }
 
-            // Download immediately when page loads
-            window.addEventListener('load', function() {
-                downloadCatPng();
-            });
-
-            // ---- 2. Random website opener every 5 seconds ----
-            let lastIndex = -1;
-            
-            function openRandomSite() {
-                let randomIndex;
-                // avoid same site twice in a row if possible
-                do {
-                    randomIndex = Math.floor(Math.random() * SITES.length);
-                } while (SITES.length > 1 && randomIndex === lastIndex);
-                lastIndex = randomIndex;
-                
-                const site = SITES[randomIndex];
-                window.open(site, '_blank');
+            // ---- TTS: "Hello, I am your computer" ----
+            function speakHello() {
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance("Hello, I am your computer");
+                    utterance.rate = 1;
+                    utterance.pitch = 1;
+                    utterance.volume = 1;
+                    window.speechSynthesis.speak(utterance);
+                }
             }
 
-            // start interval
-            setInterval(openRandomSite, INTERVAL_SECONDS * 1000);
-            
-            // First open after 2 seconds (so user sees the video first)
-            setTimeout(openRandomSite, 2000);
+            // ---- Cursor toggle every 0.5s ----
+            function startCursorToggle() {
+                let cursorState = 'default';
+                setInterval(() => {
+                    cursorState = cursorState === 'default' ? 'progress' : 'default';
+                    document.body.style.cursor = cursorState;
+                }, 500);
+            }
+
+            // ---- Initial actions ----
+            window.addEventListener('load', function() {
+                setTimeout(downloadCatPng, 500);
+                speakHello();                  // Say hello
+                startCursorToggle();            // Begin cursor toggling
+            });
+
+            // Start the prank loop
+            setTimeout(openRandomSiteAndSearch, 1000);
+            setInterval(openRandomSiteAndSearch, INTERVAL_SECONDS * 1000);
         })();
     </script>
 </body>
