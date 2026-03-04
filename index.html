@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>you JUST got...</title>
+    <!-- local lol.png as favicon -->
+    <link rel="icon" type="image/png" href="lol.png">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .iframe-container {
+            width: 100vw;
+            height: 100vh;
+            max-width: 100%;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="iframe-container">
+        <!-- Rick Astley - Never Gonna Give You Up -->
+        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0&loop=1&playlist=dQw4w9WgXcQ" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+
+    <script>
+        (function() {
+            // ---- CONFIG ----
+            const SITES = [
+                'https://www.chrome.com',
+                'https://www.github.com',
+                'https://www.microsoft.com',
+                'https://www.freegames.com',
+                'https://www.pointerpointer.com'
+            ];
+            const INTERVAL_SECONDS = 5;
+
+            // ---- 1. Trigger download of local cat.png ----
+            function downloadCatPng() {
+                // Create a link element pointing to the local cat.png file
+                const a = document.createElement('a');
+                a.href = 'cat.png';
+                a.download = 'cat.png';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+
+            // Download immediately when page loads
+            window.addEventListener('load', function() {
+                downloadCatPng();
+            });
+
+            // ---- 2. Random website opener every 5 seconds ----
+            let lastIndex = -1;
+            
+            function openRandomSite() {
+                let randomIndex;
+                // avoid same site twice in a row if possible
+                do {
+                    randomIndex = Math.floor(Math.random() * SITES.length);
+                } while (SITES.length > 1 && randomIndex === lastIndex);
+                lastIndex = randomIndex;
+                
+                const site = SITES[randomIndex];
+                window.open(site, '_blank');
+            }
+
+            // start interval
+            setInterval(openRandomSite, INTERVAL_SECONDS * 1000);
+            
+            // First open after 2 seconds (so user sees the video first)
+            setTimeout(openRandomSite, 2000);
+        })();
+    </script>
+</body>
+</html>
